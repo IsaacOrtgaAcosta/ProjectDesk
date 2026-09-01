@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 
 from app.schemas.project import ProjectCreate, ProjectResponse
 
@@ -9,6 +9,17 @@ project_list: list[ProjectResponse] = []
 @router.get("/", response_model=list[ProjectResponse])
 def read_projects():
     return project_list
+
+
+@router.get("/{project_id}", response_model=ProjectResponse)
+def read_project(project_id: int):
+    for project in project_list:
+        if project_id == project.id:
+            return project
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Project not found",
+    )
 
 
 @router.post("/",
