@@ -52,3 +52,15 @@ def update_project(project_id: int, project_data: ProjectCreate):
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Project not found",
     )
+
+
+@router.delete("/{project_id}")
+def delete_project(project_id: int):
+    for index, project in enumerate(project_list):
+        if project_id == project.id:
+            deleted_project = project_list.pop(index)
+            return deleted_project
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Project not found",
+    )
