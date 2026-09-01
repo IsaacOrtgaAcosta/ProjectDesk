@@ -34,3 +34,21 @@ def create_project(project: ProjectCreate):
     )
     project_list.append(created_project)
     return created_project
+
+
+@router.put("/{project_id}", response_model=ProjectResponse)
+def update_project(project_id: int, project_data: ProjectCreate):
+    for index, project in enumerate(project_list):
+        if project_id == project.id:
+            updated_project = ProjectResponse(
+                id=project.id,
+                name=project_data.name,
+                description=project_data.description,
+            )
+
+            project_list[index] = updated_project
+            return updated_project
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Project not found",
+    )
