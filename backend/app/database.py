@@ -20,11 +20,11 @@ database_url = URL.create(
 
 engine = create_engine(database_url)
 
-SessionLocal = sessionmaker(bind=engine)
+DBSession = sessionmaker(bind=engine)
 
 
 def get_db():
-    db = SessionLocal()
+    db = DBSession()
     try:
         yield db
     finally:
