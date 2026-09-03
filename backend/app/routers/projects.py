@@ -9,7 +9,6 @@ from app.models.project import Project
 from app.schemas.project import ProjectCreate, ProjectResponse
 
 router = APIRouter(prefix="/projects", tags=["projects"])
-project_list: list[ProjectResponse] = []
 
 
 @router.get("/", response_model=list[ProjectResponse])
@@ -66,13 +65,17 @@ def update_project(project_id: int,
     return project
 
 
-@router.delete("/{project_id}")
-def delete_project(project_id: int):
-    for index, project in enumerate(project_list):
-        if project_id == project.id:
-            deleted_project = project_list.pop(index)
-            return deleted_project
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Project not found",
-    )
+@router.delete("/{project_id}", response_model=ProjectResponse)
+def delete_project(
+                    project_id: int,
+                    db: Annotated[Session, Depends(get_db)]):
+    project = db.get(Project, project_id)
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found",
+        )
+    db.delete(project)
+    db.commit()
+
+    return project
